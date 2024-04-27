@@ -9,6 +9,7 @@ def meture_execution_time(func):
         return result
     return wrapper
 
+
 @meture_execution_time
 def testing():
     print('Funcion de prueba')

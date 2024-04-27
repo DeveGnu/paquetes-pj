@@ -18,13 +18,27 @@ def ping():
 # POST
 @app_flask.route('/example_post',methods=['POST'])
 def example_post():
-    data = request.json
-    return jsonify({
-        "status":True,
-        "data":{
-            "message": [data['id'],data['item']]
-        }
-    })
+    try:
+        data = request.json
+        return jsonify({
+            "status":True,
+            "data":{
+                "message": [data['id'],data['item']]
+            }
+        })
+    # 1st catch 
+    except ArithmeticError as aritmeticError:
+        print(f"except #1 - aritmeticError: {aritmeticError}")
+        return jsonify({
+            "status":False,
+            "data":str(aritmeticError)
+        })
+    # 1st catch 
+    except NameError as nameError:
+        print(f"except #2 - nameError: {nameError}")
+    # last catch 
+    except Exception as error:
+        print(f"except #3 - Error: {error}")
     
 #PUT
 @app_flask.route('/example_put/<int:id>/<string:name>',methods=['PUT'])
