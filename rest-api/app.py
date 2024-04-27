@@ -43,8 +43,12 @@ jwt = JWTManager(app_flask)
 # Config DB
 
 #Blueprints
+
 app_flask.register_blueprint(ApiController, url_prefix='/api')
+limiter.limit('400/minute')(ApiController)
+
 app_flask.register_blueprint(AppController, url_prefix='/app')
+limiter.limit('200/minute')(AppController)
 
 #entry point 
 if __name__ == '__main__':
