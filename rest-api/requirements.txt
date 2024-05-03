@@ -1,5 +1,7 @@
 Flask
+flask-jwt-extended
 flask-cors
 flask-Limiter
-flask-jwt-extended
+Flask-PyMongo
+mysql-connector-python-8.4.0
 waitress
