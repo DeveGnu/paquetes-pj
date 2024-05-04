@@ -1,4 +1,5 @@
 from flask import Blueprint,current_app,jsonify,request
+import csv
 
 MysqlController = Blueprint('mysql',__name__)
 
@@ -139,3 +140,45 @@ def user_delete(email):
             }
         })
         
+
+@MysqlController.route('/cargaMasiva',methods=['POST'])
+def upload_csv():
+    if 'users' not in request.files:
+        return jsonify({
+            "status":False,
+            "data":{
+                "message": "No existe la llave 'users' en el formData"
+            }
+        })
+    file = request.files['users']
+    extension = file.filename.split('.')[1]
+    if extension != 'csv':
+        return jsonify({
+            "status":False,
+            "data":{
+                "message": "La extension del archivo no es correcta, suba un archivo .csv"
+            }
+        })
+        
+    try:
+        
+        data = file.read().decode('utf-8').splitlines()
+        csv_users = csv.reader(data)
+        
+        for row in csv_users:
+            print(f"Nombre: {row[0]} - Correo: {row[1]}")
+            
+        return jsonify({
+            "status":True,
+            "data":{
+                "message": "Debugging..."
+            }
+        })
+        
+    except Exception as fileError:
+        return jsonify({
+            "status":False,
+            "data":{
+                "message": f"Error en el archivo: {str(fileError)}"
+            }
+        })
