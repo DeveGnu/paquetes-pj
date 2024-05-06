@@ -1,5 +1,6 @@
 from flask import request, jsonify, Blueprint, current_app
 from flask_jwt_extended import create_access_token
+from middlewares.testingMiddleware import testing_middleware
 
 ApiController = Blueprint('api',__name__)
 
@@ -25,11 +26,19 @@ def testing_secure_ping():
 
 # GET
 @ApiController.route('/ping',methods=['GET'])
+@testing_middleware
 def ping():
-    example_test = request.args.get('usuario')
+    usuario = request.args.get('usuario')
+    testingProperty = request.args.get('testingProperty')
+    estado = request.args.get('estado')
+    
     return jsonify({
         "status":True,
         "data":{
-            "message": example_test
+            "message": {
+                "usuario":usuario,
+                "testingProperty":testingProperty,
+                "estado":estado
+            }
         }
     })

@@ -9,6 +9,7 @@ from datetime import timedelta
 from flask_jwt_extended import JWTManager
 import mysql.connector
 from flask_pymongo import PyMongo
+from waitress import serve
 
 # Controllers section
 from blueprints.apiController import ApiController
@@ -94,5 +95,5 @@ limiter.limit('200/minute')(MongoController)
 
 #entry point 
 if __name__ == '__main__':
-    app_flask.run(port=3690)
-    # serve(app_flask, host='0.0.0.0', port='3690', url_scheme='http')
+    # app_flask.run(port=3690)
+    serve(app_flask, host='0.0.0.0', port='3690', url_scheme='http')
