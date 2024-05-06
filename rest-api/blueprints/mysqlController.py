@@ -1,5 +1,6 @@
-from flask import Blueprint,current_app,jsonify,request
+from flask import Blueprint,current_app,jsonify,request,Response
 import csv
+import io
 
 MysqlController = Blueprint('mysql',__name__)
 
@@ -161,19 +162,39 @@ def upload_csv():
         })
         
     try:
-        
         data = file.read().decode('utf-8').splitlines()
         csv_users = csv.reader(data)
         
+        query = "INSERT INTO usuarios (nombre,correo) VALUES "
+        
         for row in csv_users:
-            print(f"Nombre: {row[0]} - Correo: {row[1]}")
+            tempQuery = f"('{row[0]}','{row[1]}'),"
+            query += tempQuery
             
-        return jsonify({
-            "status":True,
-            "data":{
-                "message": "Debugging..."
-            }
-        })
+        
+        query = query[:-1]
+        
+        print(f"query: {query}")
+        dictionary_cursor = current_app.config['mysq_dictionary_cursor']
+        
+        dictionary_cursor.execute(query)
+        result = dictionary_cursor.fetchall()
+        
+        print(result)
+        if len(result) == 0:
+            return jsonify({
+                "status":True,
+                "data":{
+                    "message": "Los registros se guardaron exitosamente"
+                }
+            })
+        else:
+            return jsonify({
+                "status":False,
+                "data":{
+                    "message": "Hubo un error al cargar la información"
+                }
+            })
         
     except Exception as fileError:
         return jsonify({
@@ -182,3 +203,20 @@ def upload_csv():
                 "message": f"Error en el archivo: {str(fileError)}"
             }
         })
+
+@MysqlController.route('/descargaCsv',methods=['GET'])
+def download_csv():
+    mysql_cursor = current_app.config['mysql_cursor']
+    query = "SELECT * FROM usuarios"
+    mysql_cursor.execute(query)
+    result = mysql_cursor.fetchall()
+    
+    data = ",".join([str(column[0]) for column in mysql_cursor.description]) + "\n"
+    # data = "nombre,correo\n"
+    for item in result:
+        data += ",".join([str(column) for column in item]) + "\n"
+    
+    document_response = Response(data,mimetype="text/csv")
+    document_response.headers.set("Content-Dispostion","attachment", filename="respaldoUsuarios.csv")
+    
+    return document_response

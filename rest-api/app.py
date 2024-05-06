@@ -92,7 +92,6 @@ limiter.limit('200/minute')(MysqlController)
 app_flask.register_blueprint(MongoController, url_prefix='/mongo')
 limiter.limit('200/minute')(MongoController)
 
-
 #entry point 
 if __name__ == '__main__':
     app_flask.run(port=3690)
